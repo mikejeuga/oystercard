@@ -2,10 +2,21 @@ require "oystercard"
 
 describe Oystercard do
   let (:entry_station) { double :station }
+  let (:exit_station) { double :station }
 
   context "#balance" do
     it "should have a balance set to 0" do
       expect(subject.balance).to eq(0)
+    end
+  end
+
+  context "#journey_list" do
+    it "should have a list of journeys" do
+      expect(subject.journey_list).to eq(subject.journey_list)
+    end
+
+    it "should have an empty list of journeys" do
+      expect(subject.journey_list).to be_empty
     end
   end
 
@@ -34,29 +45,31 @@ describe Oystercard do
   end
 
   context "#touch_out" do
+    it { is_expected.to respond_to(:touch_out).with(1).argument }
+
     it "can touch out" do
       oyster = Oystercard.new(3)
       oyster.touch_in(entry_station)
-      oyster.touch_out
+      oyster.touch_out(exit_station)
       expect(oyster).not_to be_in_journey
     end
 
     it "deducts from the card on touch out" do
       subject.top_up(1)
       subject.touch_in(entry_station)
-      expect { subject.touch_out }.to change { subject.balance }.by -(::MIN_FARE)
+      expect { subject.touch_out(exit_station) }.to change { subject.balance }.by -(::MIN_FARE)
     end
 
     it "should nullify the entry_station" do
       subject.top_up(2)
       subject.touch_in(entry_station)
-      expect { subject.touch_out }.to change { subject.entry_station }.to nil
+      expect { subject.touch_out(exit_station) }.to change { subject.entry_station }.to nil
     end
 
     it "a journey can be ended" do
       subject.top_up(3)
       subject.touch_in(entry_station)
-      subject.touch_out
+      subject.touch_out(exit_station)
       expect(subject).not_to be_in_journey
     end
   end
@@ -79,6 +92,15 @@ describe Oystercard do
     it "should raise an error if not enough at least GBP1" do
       oyster = Oystercard.new
       expect { oyster.touch_in(entry_station) }.to raise_error("You don't have enough funds")
+    end
+  end
+
+  context "#record_jouney" do
+    it "should create a journey hashe" do
+      subject.top_up(5)
+      subject.touch_in(entry_station)
+      subject.touch_out(exit_station)
+      expect(subject.journey_list).to include({ entry_station => exit_station })
     end
   end
 end
