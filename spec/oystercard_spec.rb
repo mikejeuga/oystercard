@@ -10,16 +10,6 @@ describe Oystercard do
     end
   end
 
-  context "#journey_list" do
-    it "should have a list of journeys" do
-      expect(subject.journey_list).to eq(subject.journey_list)
-    end
-
-    it "should have an empty list of journeys" do
-      expect(subject.journey_list).to be_empty
-    end
-  end
-
   context "#top_up" do
     it { is_expected.to respond_to(:top_up).with(1).argument }
 
@@ -95,12 +85,13 @@ describe Oystercard do
     end
   end
 
-  context "#record_jouney" do
-    it "should create a journey hashe" do
-      subject.top_up(5)
-      subject.touch_in(entry_station)
-      subject.touch_out(exit_station)
-      expect(subject.journey_list).to include({ entry_station => exit_station })
+  context "#journey_list" do
+    it "should have a list of journeys" do
+      expect(subject.journey_list).to eq(subject.journey_list)
+    end
+
+    it "should have an empty list of journeys" do
+      expect(subject.journey_list).to be_empty
     end
   end
 end

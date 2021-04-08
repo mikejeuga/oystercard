@@ -1,3 +1,5 @@
+require_relative "station"
+
 class Oystercard
   ::DEFAULT_BALANCE = 0
   ::MIN_FARE = 1
@@ -27,12 +29,9 @@ class Oystercard
   def touch_out(exit_station)
     deduct(MIN_FARE)
     @exit_station = exit_station
-    record_journey
+    the_journey = Journey.new
+    @journey_list << the_journey.trip
     @entry_station = nil
-  end
-
-  def record_journey
-    @journey_list << { @entry_station => @exit_station }
   end
 
   private
